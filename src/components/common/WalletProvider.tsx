@@ -14,7 +14,6 @@ import { Program } from '@project-serum/anchor';
 import { State as StoreState } from '../../store/reducer';
 import LockupIdl from '../../idl/lockup';
 import RegistryIdl from '../../idl/registry';
-import MultisigIdl from '../../idl/multisig';
 
 export function useWallet(): WalletContextValues {
   const w = useContext(WalletContext);
@@ -30,7 +29,6 @@ type WalletContextValues = {
   wallet: Wallet;
   lockupClient: Program;
   registryClient: Program;
-  multisigClient: Program;
 };
 
 export default function WalletProvider(
@@ -47,7 +45,6 @@ export default function WalletProvider(
     wallet,
     lockupClient,
     registryClient,
-    multisigClient,
   } = useMemo(() => {
     const opts: ConfirmOptions = {
       preflightCommitment: 'recent',
@@ -69,23 +66,16 @@ export default function WalletProvider(
       provider,
     );
 
-    const multisigClient = new Program(
-      MultisigIdl,
-      network.multisigProgramId,
-      provider,
-    );
-
     return {
       wallet,
       lockupClient,
       registryClient,
-      multisigClient,
     };
   }, [walletProvider, network]);
 
   return (
     <WalletContext.Provider
-      value={{ wallet, lockupClient, registryClient, multisigClient }}
+      value={{ wallet, lockupClient, registryClient }}
     >
       {props.children}
     </WalletContext.Provider>

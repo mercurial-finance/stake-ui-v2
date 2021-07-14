@@ -67,8 +67,6 @@ export default function Header(props: HeaderProps) {
             <SerumLogoButton />
             <BarButton label="Stake" hrefClient="/stake" />
             <BarButton label="Lockup" hrefClient="/lockup" />
-            <BarButton label="Multisig" href="https://multisig.projectserum.com" />
-            <BarButton label="Trade" href="https://dex.projectserum.com" />
             {network.srmFaucet && (
               <BarButton
                 label="Faucet"

@@ -12,7 +12,6 @@ import { TokenRegistryProvider } from './utils/tokens';
 import Layout from './components/common/Layout';
 import MyNodePage from './pages/MyNode';
 import LockupPage from './pages/Lockup';
-import MultisigPage, { MultisigInstancePage } from './pages/Multisig';
 
 function App() {
   const theme = createMuiTheme({
@@ -39,12 +38,6 @@ function App() {
 										<Route exact path="/" component={MyNodePage} />
 										<Route exact path="/stake" component={MyNodePage} />
 										<Route exact path="/lockup" component={LockupPage} />
-										<Route exact path="/multisig" component={MultisigPage} />
-										<Route
-											exact
-											path="/multisig/:address"
-											component={MultisigInstancePage}
-										/>
 									</Layout>
 								</HashRouter>
 							</BootstrapProvider>
