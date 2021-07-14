@@ -130,7 +130,7 @@ export default function Stake() {
         ],
       },
     );
-    const pwAccount = await registryClient.account.pendingWithdrawal(
+    const pwAccount = await registryClient.account.pendingWithdrawal.fetch(
       pendingWithdrawal.publicKey,
     );
     dispatch({

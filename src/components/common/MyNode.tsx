@@ -22,7 +22,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
-import { Account, SYSVAR_RENT_PUBKEY, PublicKey, SystemProgram } from '@solana/web3.js';
+import { SYSVAR_RENT_PUBKEY, PublicKey, SystemProgram, Signer } from '@solana/web3.js';
 import { TokenInstructions } from '@project-serum/serum';
 import { getTokenAccount } from '@project-serum/common';
 import { useWallet } from '../../components/common/WalletProvider';
@@ -90,9 +90,12 @@ function MyNodeBanner(props: MyNodeBannerProps) {
     enqueueSnackbar('Creating stake account', {
       variant: 'info',
     });
+    if (!wallet.publicKey) {
+      return;
+    }
     const seed = await memberSeed(registrar);
     const member = await PublicKey.createWithSeed(
-      wallet.publicKey!,
+      wallet.publicKey,
       seed,
       registryClient.programId,
     );
@@ -126,9 +129,9 @@ function MyNodeBanner(props: MyNodeBannerProps) {
       },
       instructions: [
         SystemProgram.createAccountWithSeed({
-          fromPubkey: wallet.publicKey!,
+          fromPubkey: wallet.publicKey,
           newAccountPubkey: member,
-          basePubkey: wallet.publicKey!,
+          basePubkey: wallet.publicKey,
           seed,
           lamports: await registryClient.provider.connection.getMinimumBalanceForRentExemption(
             registryClient.account.member.size,
@@ -138,7 +141,7 @@ function MyNodeBanner(props: MyNodeBannerProps) {
         }),
       ],
     });
-    const signers: Account[] = [];
+    const signers: Signer[] = [];
     const allTxs = [mainTx, lockedTx, { tx, signers }];
     // @ts-ignore
     let txSigs = await registryClient.provider.sendAll(allTxs, {
@@ -148,7 +151,7 @@ function MyNodeBanner(props: MyNodeBannerProps) {
     });
     console.log('Accounts created with transactions:', txSigs);
 
-    const memberAccount = await registryClient.account.member(member);
+    const memberAccount = await registryClient.account.member.fetch(member);
     const memberProgramAccount = {
       publicKey: member,
       account: memberAccount,
@@ -449,7 +452,7 @@ function DepositDialog(props: DepositDialogProps) {
             );
 
             // Update the store with the updated account.
-            const updatedVestingAccount = await lockupClient.account.vesting(
+            const updatedVestingAccount = await lockupClient.account.vesting.fetch(
               from,
             );
             dispatch({
@@ -607,7 +610,7 @@ function WithdrawDialog(props: WithdrawDialogProps) {
             });
 
             // Update the store with the updated account.
-            const updatedVestingAccount = await lockupClient.account.vesting(
+            const updatedVestingAccount = await lockupClient.account.vesting.fetch(
               from,
             );
             dispatch({

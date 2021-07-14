@@ -15,7 +15,6 @@ export type Network = {
   // Programs.
   registryProgramId: PublicKey;
   lockupProgramId: PublicKey;
-  multisigProgramId: PublicKey;
 
   // Staking instances.
   registrars: { [token: string]: PublicKey };
@@ -29,7 +28,6 @@ export const networks: Networks = {
     // Cluster.
     label: 'Mainnet Beta',
     url: 'https://api.mainnet-beta.solana.com',
-    //url: 'https://api.mainnet-beta.solana.com',
     explorerClusterSuffix: '',
 
     srmFaucet: null,
@@ -40,9 +38,6 @@ export const networks: Networks = {
     ),
     lockupProgramId: new PublicKey(
       '6ebQNeTPZ1j7k3TtkCCtEPRvG7GQsucQrZ7sSEDQi9Ks',
-    ),
-    multisigProgramId: new PublicKey(
-      '3S6ALMCGVib4X3vVR3CLpm2K6Ng5qbWFYMTo5jfxWcEq',
     ),
     registrars: {
       srm: new PublicKey('5vJRzKtcp4fJxqmR7qzajkaKSiAb6aT9grRsaZKXU222'),
@@ -63,9 +58,6 @@ export const networks: Networks = {
 
     srmFaucet: null,
     msrmFaucet: null,
-    multisigProgramId: new PublicKey(
-      '9z7Pq56To96qbVLzuBcf47Lc7u8uUWZh6k5rhcaTsDjz',
-    ),
 
     registryProgramId: new PublicKey(
       '65aMavjMw3EhmWKVCkGn1Uj2SqZ3XY4coJhYM1BVJTHw',
@@ -93,9 +85,6 @@ export const networks: Networks = {
     srmFaucet: null,
     msrmFaucet: null,
 
-    multisigProgramId: new PublicKey(
-      '9z7Pq56To96qbVLzuBcf47Lc7u8uUWZh6k5rhcaTsDjz',
-    ),
     registryProgramId: new PublicKey(
       'A3ukM9swAsTqVC6g5Zy9FsWXofe5f2JhXMEfzenNf9Q7',
     ),
