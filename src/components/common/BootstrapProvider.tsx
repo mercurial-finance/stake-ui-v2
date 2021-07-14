@@ -133,7 +133,7 @@ export async function refreshAccounts({
 
     // All registrars.
     const registrars: ProgramAccount[] = (
-      await anchor.utils.getMultipleAccounts(
+      await anchor.utils.rpc.getMultipleAccounts(
         registryClient.provider.connection,
         registrarAddresses,
       )
@@ -150,7 +150,7 @@ export async function refreshAccounts({
 
     // Mint for each registrar.
     const mints: ProgramAccount[] = (
-      await anchor.utils.getMultipleAccounts(
+      await anchor.utils.rpc.getMultipleAccounts(
         registryClient.provider.connection,
         registrars.map(r => r.account.mint),
       )
@@ -164,7 +164,7 @@ export async function refreshAccounts({
 
     // Reward queues for each registrar.
     const rewardQs = (
-      await anchor.utils.getMultipleAccounts(
+      await anchor.utils.rpc.getMultipleAccounts(
         registryClient.provider.connection,
         registrars.map(r => r.account.rewardEventQ),
       )
@@ -220,7 +220,7 @@ export async function refreshAccounts({
     );
     const memberAddresses: PublicKey[] = members.map(m => m.memberPublicKey);
     const memberAccounts: ProgramAccount[] = (
-      await anchor.utils.getMultipleAccounts(
+      await anchor.utils.rpc.getMultipleAccounts(
         registryClient.provider.connection,
         memberAddresses,
       )
@@ -272,7 +272,7 @@ export async function refreshAccounts({
       .map(r => r.account.mint)
       .concat(registrars.map(r => r.account.poolMint));
     const mints = (
-      await anchor.utils.getMultipleAccounts(
+      await anchor.utils.rpc.getMultipleAccounts(
         registryClient.provider.connection,
         mintAddresses,
       )
@@ -519,7 +519,7 @@ export async function fetchAndDispatchMemberAccounts(
   connection: any,
 ) {
   let accounts = (
-    await anchor.utils.getMultipleAccounts(connection, [
+    await anchor.utils.rpc.getMultipleAccounts(connection, [
       memberAccount.account.balances.vault,
       memberAccount.account.balances.vaultStake,
       memberAccount.account.balances.vaultPw,

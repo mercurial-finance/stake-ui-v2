@@ -167,7 +167,7 @@ function NewVestingDialog(props: NewVestingDialogProps) {
       );
       // Only add to the local store if the lockup belongs to the current user.
       if (beneficiaryPublicKey.equals(lockupClient.provider.wallet.publicKey)) {
-        const vestingAccount = await lockupClient.account.vesting(
+        const vestingAccount = await lockupClient.account.vesting.fetch(
           vesting.publicKey,
         );
         dispatch({

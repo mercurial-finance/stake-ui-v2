@@ -50,7 +50,7 @@ export async function vendorSigner(
 // a UX convenience. Each member address is a deterministic function of the
 // program, beneficiary, and this (constant) seed.
 export async function memberSeed(registrar: PublicKey): Promise<string> {
-  const seed = await anchor.utils.sha256(`${registrar.toString()}:Member`);
+  const seed = await anchor.utils.sha256.hash(`${registrar.toString()}:Member`);
   // The max length of seeds allowed by Solana is 32.
   return seed.slice(0, 32);
 }

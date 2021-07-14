@@ -9,11 +9,10 @@ import { useSelector } from 'react-redux';
 import { Connection, ConfirmOptions } from '@solana/web3.js';
 // @ts-ignore
 import Wallet from '@project-serum/sol-wallet-adapter';
-import { Provider } from '@project-serum/common';
-import { Program } from '@project-serum/anchor';
+import { Idl, Program, Provider } from '@project-serum/anchor';
 import { State as StoreState } from '../../store/reducer';
-import LockupIdl from '../../idl/lockup';
-import RegistryIdl from '../../idl/registry';
+import LockupIdl from '../../idl/lockup.json';
+import RegistryIdl from '../../idl/registry.json';
 
 export function useWallet(): WalletContextValues {
   const w = useContext(WalletContext);
@@ -52,16 +51,16 @@ export default function WalletProvider(
     };
     const connection = new Connection(network.url, opts.preflightCommitment);
     const wallet = new Wallet(walletProvider, network.url);
-		// @ts-ignore
+    // @ts-ignore
     const provider = new Provider(connection, wallet, opts);
 
     const lockupClient = new Program(
-      LockupIdl,
+      LockupIdl as Idl,
       network.lockupProgramId,
       provider,
     );
     const registryClient = new Program(
-      RegistryIdl,
+      RegistryIdl as Idl,
       network.registryProgramId,
       provider,
     );

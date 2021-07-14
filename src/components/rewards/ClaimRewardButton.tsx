@@ -53,7 +53,7 @@ export default function ClaimRewardButton(props: ClaimRewardButtonProps) {
       `Processing vendor reward ${rli!.vendor!.publicKey.toString()}`,
       'Reward processed',
       async () => {
-        const vendor = await registryClient.account.rewardVendor(
+        const vendor = await registryClient.account.rewardVendor.fetch(
           rli.vendor!.publicKey,
         );
         const _vendorSigner = await vendorSigner(
@@ -72,6 +72,7 @@ export default function ClaimRewardButton(props: ClaimRewardButtonProps) {
             .accounts({
               vesting: vendoredVesting.publicKey,
               vault: vendoredVestingVault.publicKey,
+              // @ts-ignore
               depositor: vendor.vault,
               depositorAuthority: _vendorSigner.publicKey,
               tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
@@ -151,6 +152,7 @@ export default function ClaimRewardButton(props: ClaimRewardButtonProps) {
                 balancesLocked: member!.account.balancesLocked,
 
                 vendor: rli.vendor!.publicKey,
+                // @ts-ignore
                 vault: vendor.vault,
                 vendorSigner: _vendorSigner.publicKey,
 

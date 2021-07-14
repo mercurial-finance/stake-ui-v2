@@ -45,7 +45,7 @@ export default function Rewards() {
   useEffect(() => {
     (async () => {
       // TODO: need to chop up the calls here, for reward vendors > 100 entires.
-      const accounts = await anchor.utils.getMultipleAccounts(
+      const accounts = await anchor.utils.rpc.getMultipleAccounts(
         registryClient.provider.connection,
         events.map(m => m.vendor),
       );

@@ -193,7 +193,7 @@ export default function VestingAccountCard(props: VestingAccountCardProps) {
           },
           remainingAccounts,
         });
-        const newVesting = await lockupClient.account.vesting(
+        const newVesting = await lockupClient.account.vesting.fetch(
           vesting.publicKey,
         );
         dispatch({
