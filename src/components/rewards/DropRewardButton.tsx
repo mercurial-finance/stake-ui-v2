@@ -8,29 +8,27 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import Tabs from '@material-ui/core/Tabs';
-import MenuItem from '@material-ui/core/MenuItem';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
 import * as serumCmn from '@project-serum/common';
 import { TokenInstructions } from '@project-serum/serum';
 import {
-  Account,
+  Keypair,
   PublicKey,
   SYSVAR_CLOCK_PUBKEY,
   SYSVAR_RENT_PUBKEY,
 } from '@solana/web3.js';
 import { useWallet } from '../../components/common/WalletProvider';
 import { State as StoreState } from '../../store/reducer';
-import OwnedTokenAccountsSelect from '../common/OwnedTokenAccountsSelect';
 import * as notification from '../common/Notification';
 import { fromDisplay } from '../../utils/tokens';
-import { Network } from '../../store/config';
 import { activeRegistrar } from '../common/RegistrarSelect';
+import OwnedTokenAccountsSelectV2 from '../common/OwnerTokenAccountsSelectV2';
+import { ProgramAccount } from '@project-serum/anchor';
+import { AccountInfo as TokenAccount } from '@solana/spl-token';
 
 export default function DropRewardButton() {
   const [showDialog, setShowDialog] = useState(false);
@@ -103,14 +101,12 @@ function DropUnlockedForm(props: DropUnlockedFormProps) {
   const { onClose } = props;
   const snack = useSnackbar();
   const { registryClient } = useWallet();
-  const { network, registrar, accounts } = useSelector((state: StoreState) => {
+  const { registrar } = useSelector((state: StoreState) => {
     return {
-      network: state.common.network,
       registrar: {
         publicKey: state.registry.registrar,
         account: state.accounts[state.registry.registrar.toString()],
-      },
-      accounts: state.accounts,
+      }
     };
   });
 
@@ -118,11 +114,9 @@ function DropUnlockedForm(props: DropUnlockedFormProps) {
     null,
   );
   const [expiryTs, setExpiryTs] = useState<null | number>(null);
-  const [depositor, setDepositor] = useState<null | PublicKey>(null);
-  const [mint, setMint] = useState<null | string>(null);
+  const [depositor, setDepositor] = useState<null | ProgramAccount<TokenAccount>>(null);
 
   const isSendEnabled =
-    mint !== null &&
     depositor !== null &&
     rewardDisplayAmount !== null &&
     rewardDisplayAmount >= 100 &&
@@ -134,28 +128,28 @@ function DropUnlockedForm(props: DropUnlockedFormProps) {
       'Dropping unlocked reward...',
       'Unlocked reward dropped',
       async () => {
-        let mintAccount = accounts[network.mints[mint!].toString()];
-        if (!mintAccount) {
-          mintAccount = await serumCmn.getMintInfo(
-            registryClient.provider,
-            network.mints[mint!],
-          );
+        if (!depositor) {
+          throw new Error('Invalid state, depositor is not set');
         }
+        const mintAccount = await serumCmn.getMintInfo(
+          registryClient.provider,
+          depositor.account.mint,
+        );
 
-        const lockedRewardAmount = fromDisplay(
+        const unlockedRewardAmount = fromDisplay(
           rewardDisplayAmount!,
           mintAccount.decimals,
         );
         const rewardKind = { unlocked: {} };
-        const vendor = new Account();
-        const vendorVault = new Account();
+        const vendor = new Keypair();
+        const vendorVault = new Keypair();
         const [vendorSigner, nonce] = await PublicKey.findProgramAddress(
           [registrar.publicKey.toBuffer(), vendor.publicKey.toBuffer()],
           registryClient.programId,
         );
         return await registryClient.rpc.dropReward(
           rewardKind,
-          lockedRewardAmount,
+          unlockedRewardAmount,
           new BN(expiryTs!),
           registryClient.provider.wallet.publicKey,
           nonce,
@@ -166,7 +160,7 @@ function DropUnlockedForm(props: DropUnlockedFormProps) {
               poolMint: registrar.account.poolMint,
               vendor: vendor.publicKey,
               vendorVault: vendorVault.publicKey,
-              depositor,
+              depositor: depositor.publicKey,
               depositorAuthority: registryClient.provider.wallet.publicKey,
               tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
               clock: SYSVAR_CLOCK_PUBKEY,
@@ -177,7 +171,7 @@ function DropUnlockedForm(props: DropUnlockedFormProps) {
               ...(await serumCmn.createTokenAccountInstrs(
                 registryClient.provider,
                 vendorVault.publicKey,
-                network.mints[mint!],
+                depositor.account.mint,
                 vendorSigner,
               )),
               await registryClient.account.rewardVendor.createInstruction(
@@ -203,9 +197,6 @@ function DropUnlockedForm(props: DropUnlockedFormProps) {
   };
   return (
     <DropVendorForm
-      network={network}
-      mint={mint}
-      setMint={setMint}
       setDepositor={setDepositor}
       setRewardDisplayAmount={setRewardDisplayAmount}
       expiryTs={expiryTs}
@@ -223,14 +214,12 @@ function DropLockedForm(props: DropLockedFormProps) {
   const { onClose } = props;
   const snack = useSnackbar();
   const { registryClient } = useWallet();
-  const { network, registrar, accounts } = useSelector((state: StoreState) => {
+  const { registrar } = useSelector((state: StoreState) => {
     return {
-      network: state.common.network,
       registrar: {
         publicKey: state.registry.registrar,
         account: state.accounts[state.registry.registrar.toString()],
-      },
-      accounts: state.accounts,
+      }
     };
   });
 
@@ -240,14 +229,12 @@ function DropLockedForm(props: DropLockedFormProps) {
   const [startTs, setStartTs] = useState<null | number>(null);
   const [endTs, setEndTs] = useState<null | number>(null);
   const [expiryTs, setExpiryTs] = useState<null | number>(null);
-  const [depositor, setDepositor] = useState<null | PublicKey>(null);
-  const [mint, setMint] = useState<null | string>(null);
+  const [depositor, setDepositor] = useState<null | ProgramAccount<TokenAccount>>(null);
   const [periodCount, setPeriodCount] = useState(7);
 
   const isSendEnabled =
     startTs !== null &&
     endTs !== null &&
-    mint !== null &&
     depositor !== null &&
     rewardDisplayAmount !== null &&
     rewardDisplayAmount >= 100 &&
@@ -266,13 +253,16 @@ function DropLockedForm(props: DropLockedFormProps) {
             periodCount: new BN(periodCount),
           },
         };
-        const vendor = new Account();
-        const vendorVault = new Account();
+        const vendor = new Keypair();
+        const vendorVault = new Keypair();
         const [vendorSigner, nonce] = await PublicKey.findProgramAddress(
           [registrar.publicKey.toBuffer(), vendor.publicKey.toBuffer()],
           registryClient.programId,
         );
-        let mintAccount = accounts[network.mints[mint!].toString()];
+        const mintAccount = await serumCmn.getMintInfo(
+          registryClient.provider,
+          depositor!.account.mint,
+        );
         const rewardAmount = fromDisplay(
           rewardDisplayAmount!,
           mintAccount.decimals,
@@ -301,7 +291,7 @@ function DropLockedForm(props: DropLockedFormProps) {
               ...(await serumCmn.createTokenAccountInstrs(
                 registryClient.provider,
                 vendorVault.publicKey,
-                network.mints[mint!],
+                depositor!.account.mint,
                 vendorSigner,
               )),
               await registryClient.account.rewardVendor.createInstruction(
@@ -325,9 +315,6 @@ function DropLockedForm(props: DropLockedFormProps) {
 
   return (
     <DropVendorForm
-      network={network}
-      mint={mint}
-      setMint={setMint}
       setDepositor={setDepositor}
       setRewardDisplayAmount={setRewardDisplayAmount}
       setStartTs={setStartTs}
@@ -344,10 +331,7 @@ function DropLockedForm(props: DropLockedFormProps) {
 }
 
 type DropVendorFormProps = {
-  network: Network;
-  mint: string | null;
-  setMint: (mintLabel: string) => void;
-  setDepositor: (pk: PublicKey) => void;
+  setDepositor: (acc: ProgramAccount<TokenAccount>) => void;
   setRewardDisplayAmount: (n: number) => void;
   setStartTs?: (n: number) => void;
   setEndTs?: (n: number) => void;
@@ -362,10 +346,7 @@ type DropVendorFormProps = {
 
 function DropVendorForm(props: DropVendorFormProps) {
   const {
-    network,
-    mint,
     setDepositor,
-    setMint,
     setRewardDisplayAmount,
     setStartTs,
     setEndTs,
@@ -377,43 +358,16 @@ function DropVendorForm(props: DropVendorFormProps) {
     onClick,
     isSendEnabled,
   } = props;
-  const mintOptions: { label: string; publicKey: PublicKey }[] = Object.keys(
-    network.mints,
-  ).map(label => {
-    return {
-      label,
-      publicKey: network.mints[label],
-    };
-  });
-
   return (
     <>
       <div>
         <div style={{ display: 'flex', marginTop: '10px' }}>
-          <div style={{ flex: 1 }}>
-            <OwnedTokenAccountsSelect
+          <div style={{ flex: 1}}>
+            <OwnedTokenAccountsSelectV2
               style={{ height: '100%' }}
-              mint={mint === null ? undefined : network.mints[mint]}
-              onChange={(f: PublicKey) => setDepositor(f)}
+              onChange={(f: ProgramAccount<TokenAccount>) => setDepositor(f)}
             />
             <FormHelperText>Account to send from</FormHelperText>
-          </div>
-          <div>
-            <FormControl
-              variant="outlined"
-              style={{ width: '200px', marginLeft: '10px', marginTop: '10px' }}
-            >
-              <InputLabel>Mint</InputLabel>
-              <Select
-                value={mint}
-                onChange={e => setMint(e.target.value as string)}
-                label="Mint"
-              >
-                {mintOptions.map(m => (
-                  <MenuItem value={m.label}>{m.label.toUpperCase()}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
           </div>
           <div>
             <TextField
