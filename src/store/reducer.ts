@@ -182,7 +182,7 @@ export const initialState: State = {
   },
   registry: {
     pendingWithdrawals: null,
-    registrar: networks.devnet.registrars[0],
+    registrar: networks.devnet.registrars.token1,
   },
   accounts: {},
 };

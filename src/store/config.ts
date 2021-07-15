@@ -24,54 +24,28 @@ export type Network = {
 };
 
 export const networks: Networks = {
-  mainnet: {
-    // Cluster.
-    label: 'Mainnet Beta',
-    url: 'https://api.mainnet-beta.solana.com',
-    explorerClusterSuffix: '',
-
-    srmFaucet: null,
-    msrmFaucet: null,
-
-    registryProgramId: new PublicKey(
-      'GrAkKfEpTKQuVHG2Y97Y2FF4i7y7Q5AHLK94JBy7Y5yv',
-    ),
-    lockupProgramId: new PublicKey(
-      '6ebQNeTPZ1j7k3TtkCCtEPRvG7GQsucQrZ7sSEDQi9Ks',
-    ),
-    registrars: {
-      srm: new PublicKey('5vJRzKtcp4fJxqmR7qzajkaKSiAb6aT9grRsaZKXU222'),
-      msrm: new PublicKey('7uURiX2DwCpRuMFebKSkFtX9v5GK1Cd8nWLL8tyoyxZY'),
-      fida: new PublicKey('5C2ayX1E2SJ5kKEmDCA9ue9eeo3EPR34QFrhyzbbs3qh'),
-    },
-    mints: {
-      srm: new PublicKey('SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt'),
-      msrm: new PublicKey('MSRMcoVyrFxnSgo5uXwone5SKcGhT1KEJMFEkMEWf9L'),
-      fida: new PublicKey('EchesyfXePKdLtoiZSL8pBe8Myagyy8ZRqsACNCFGnvp'),
-    },
-  },
   devnet: {
     // Cluster.
     label: 'Devnet',
-    url: 'https://devnet.solana.com',
+    url: 'https://api.devnet.solana.com',
     explorerClusterSuffix: 'devnet',
 
     srmFaucet: null,
     msrmFaucet: null,
 
     registryProgramId: new PublicKey(
-      '65aMavjMw3EhmWKVCkGn1Uj2SqZ3XY4coJhYM1BVJTHw',
+      'FDkNe6LN6F7o89gBoM9ej4nVzJUXZXHS833YNkTadtbT',
     ),
     lockupProgramId: new PublicKey(
-      'bRGMWZz4mzJ8NG8csn5QNTbJDv2973QSvppbfcAboje',
+      '38iokLufYnuxkb456pqwxtvjcZFA5AyiZBcyBTKDcPuq',
     ),
     registrars: {
-      token1: new PublicKey('EqbwcuvPWLZ5fav58HrieHmJEqTm6RPu5bmn5bBQJ3mu'),
-      token2: new PublicKey('2rDWuS6yVFQ3jYx1nQq7gs3HgzWLJcUwm9sTUBWuXuyK'),
+      token1: new PublicKey('68hwNarRfgjx3wLBLdJZ6pCgXPAVEF61juQGe7XCLU64'),
+      token2: new PublicKey('EbKhuVSWz6nn99dcCQMYuzNcdKXmkGzD6mELc4zY9WkG'),
     },
     mints: {
-      token1: new PublicKey('Ep6ASaHQ4gKiN3gWNRKYttZEQ7b82seMk9HWc5JNBJZP'),
-      token2: new PublicKey('5vWxJthWbCFuNSZj1qcP9WoU8E6UG3DUfeAoPvYoN8PQ'),
+      token1: new PublicKey('DY3PyKxauZSsoBXD2bUcSB3TuzFs36g7vv3QmAdRvmaZ'),
+      token2: new PublicKey('CbpqKjUFvYXfa9W2YswEgq71fBHKFAExnxu6LsdgR529'),
     },
   },
 
@@ -86,18 +60,18 @@ export const networks: Networks = {
     msrmFaucet: null,
 
     registryProgramId: new PublicKey(
-      'A3ukM9swAsTqVC6g5Zy9FsWXofe5f2JhXMEfzenNf9Q7',
+      'BvD7C6FZDnCV47JYwYuRDmMcfyffzpBN9LdVEFWF6gKu',
     ),
     lockupProgramId: new PublicKey(
-      '2z65xTKJDM4iJBVz5aXtNrWfQvKGgNJvnqY1GL2mkimu',
+      '8wrTDbWsacFXE8cChWoucTTcgYHD1no2REwrGSGSm1MQ',
     ),
     registrars: {
-      token1: new PublicKey('Fwi5pie2VgWTDUSRNkca1HdFCke5r3v3mY83JbxtC3CJ'),
-      token2: new PublicKey('9kCGBWgHzGGChvmAsmu5jrXwEShZfLxKRTmKdxEpFUBr'),
+      token1: new PublicKey('8WouKMcNovdr3FPZVg3bbvKFB5uER5iLrEF6ty9RX3Wu'),
+      token2: new PublicKey('7ZnGYvdxZKiyQoSgUswehDbntgEuWAi6ft5HwRGrpQkb'),
     },
     mints: {
-      token1: new PublicKey('2aE1pietadYMeDtdqKayS4SVo9W4xtC3U7SN4iGWCVcX'),
-      token2: new PublicKey('Cgan7PWyBH6Z7JNA6f9kDYgwBMZBxRexpdd29PJgnqah'),
+      token1: new PublicKey('HdHQhbnuWz9fV4FzviD3imBQV8PLdPrNa3NqXoevyhw1'),
+      token2: new PublicKey('Ae3QGhmLvxq2YaqhHFUAdaNetzLpBUedK1VDDsEFbaGC'),
     },
   },
 };
