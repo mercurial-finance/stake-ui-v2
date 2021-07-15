@@ -79,18 +79,21 @@ export default function Rewards() {
   // All rewards to display.
   const rewards = events
     .map((m: any) => RewardListItemViewModel.fromMessage(ctx, m))
-    .reverse();
+    .reverse()
+    .reduce<RewardListItemViewModel[]>((acc, r) => {
+      if (r !== null) {
+        acc.push(r);
+      }
+      return acc;
+    }, []);
 
   // Next reward to claim.
-  let nextReward = null;
-  if (rewards.filter(r => r === null).length === 0) {
-    nextReward = rewards
-      .filter(r => r!.needsClaim)
-      .sort((a, b) =>
-        a!.cursor < b!.cursor ? -1 : a!.cursor > b!.cursor ? 1 : 0,
-      )
-      .shift();
-  }
+  let nextReward = rewards
+    .filter(r => r.needsClaim)
+    .sort((a, b) =>
+      a.cursor < b.cursor ? -1 : a.cursor > b.cursor ? 1 : 0,
+    )
+    .shift();
 
   return (
     <div style={{ width: '100%', marginTop: '24px' }}>

@@ -19,9 +19,11 @@ import { ProgramAccount } from '../../store/reducer';
 import { Network } from '../../store/config';
 import { State as StoreState } from '../../store/reducer';
 import { ViewTransactionOnExplorerButton } from '../../components/common/Notification';
+import * as serumCmn from '@project-serum/common';
+import { useAsync } from 'react-async-hook';
 
 type RewardsListProps = {
-  rewards: (RewardListItemViewModel | null)[];
+  rewards: RewardListItemViewModel[];
 };
 
 export default function RewardsList(props: RewardsListProps) {
@@ -46,7 +48,7 @@ export default function RewardsList(props: RewardsListProps) {
         rewards
           .filter(r => r!.vendor.account.expired === false)
           .map(r => {
-            return <RewardListItem rli={r as RewardListItemViewModel} />;
+            return <RewardListItem rli={r} />;
           })
       ) : (
         <ListItem>
@@ -63,11 +65,20 @@ type RewardListItemProps = {
 
 function RewardListItem(props: RewardListItemProps) {
   const { rli } = props;
+  const { registryClient } = useWallet();
 
   const [open, setOpen] = useState(false);
+  // TODO: Mints in context when redux is gone
+  const decimals = useAsync(async () => {
+    const mintAccount = await serumCmn.getMintInfo(
+      registryClient.provider,
+      rli.mint.publicKey,
+    );
+    return mintAccount.decimals;
+  }, [registryClient, rli]);
 
   const dateLabel = new Date(
-    rli.vendor!.account.startTs.toNumber() * 1000,
+    rli.vendor.account.startTs.toNumber() * 1000,
   ).toLocaleString();
   let fromLabel = `Dropped by ${rli.vendor.account.from.toString()} | ${dateLabel}`;
   return (
@@ -90,8 +101,8 @@ function RewardListItem(props: RewardListItemProps) {
             >
               <div>{`${toDisplay(
                 rli.vendor.account.total,
-                rli.mint!.account.decimals,
-              )} ${rli.mint!.publicKey}`}</div>
+                decimals?.result ?? 0
+              )} ${1}`}</div>
             </div>
           }
           secondary={fromLabel}
