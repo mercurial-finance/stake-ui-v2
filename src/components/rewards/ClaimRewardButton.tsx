@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
 import Button from '@material-ui/core/Button';
 import {
-  Account,
+  Keypair,
   PublicKey,
   SYSVAR_RENT_PUBKEY,
   SYSVAR_CLOCK_PUBKEY,
@@ -50,20 +50,20 @@ export default function ClaimRewardButton(props: ClaimRewardButtonProps) {
   const clickHandler = async (): Promise<void> => {
     notification.withTx(
       snack,
-      `Processing vendor reward ${rli!.vendor!.publicKey.toString()}`,
+      `Processing vendor reward ${rli.vendor.publicKey.toString()}`,
       'Reward processed',
       async () => {
         const vendor = await registryClient.account.rewardVendor.fetch(
-          rli.vendor!.publicKey,
+          rli.vendor.publicKey,
         );
         const _vendorSigner = await vendorSigner(
           registryClient.programId,
           registrar.publicKey,
           rli.vendor!.publicKey,
         );
-        if (rli!.reward.locked) {
-          const vendoredVesting = new Account();
-          const vendoredVestingVault = new Account();
+        if (rli.reward.locked) {
+          const vendoredVesting = new Keypair();
+          const vendoredVestingVault = new Keypair();
           const vendoredVestingSigner = await vestingSigner(
             lockupClient.programId,
             vendoredVesting.publicKey,
@@ -115,7 +115,7 @@ export default function ClaimRewardButton(props: ClaimRewardButtonProps) {
                 ...(await createTokenAccountInstrs(
                   registryClient.provider,
                   vendoredVestingVault.publicKey,
-                  rli.vendor!.account.mint,
+                  rli.vendor.account.mint,
                   vendoredVestingSigner.publicKey,
                 )),
               ],
@@ -151,7 +151,7 @@ export default function ClaimRewardButton(props: ClaimRewardButtonProps) {
                 balances: member!.account.balances,
                 balancesLocked: member!.account.balancesLocked,
 
-                vendor: rli.vendor!.publicKey,
+                vendor: rli.vendor.publicKey,
                 // @ts-ignore
                 vault: vendor.vault,
                 vendorSigner: _vendorSigner.publicKey,

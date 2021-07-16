@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import BN from 'bn.js';
 import { useSnackbar } from 'notistack';
 import {
-  Account,
+  Keypair,
   SYSVAR_RENT_PUBKEY,
   SYSVAR_CLOCK_PUBKEY,
 } from '@solana/web3.js';
@@ -98,7 +98,7 @@ export default function Stake() {
       },
     );
 
-    const pendingWithdrawal = new Account();
+    const pendingWithdrawal = new Keypair();
     const tx = await registryClient.rpc.startUnstake(
       new u64(amount),
       isLocked,

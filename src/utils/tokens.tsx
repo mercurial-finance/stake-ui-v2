@@ -8,7 +8,6 @@ import React, {
 import BN from 'bn.js';
 import { PublicKey } from '@solana/web3.js';
 import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry';
-import { networks } from '../store/config';
 
 const TokenListContext = React.createContext<TokenListContextValues>({
   tokenMap: new Map(),
@@ -56,11 +55,5 @@ export function toDisplay(amount: BN | number, decimals: number): string {
 }
 
 export function toDisplayLabel(mint: PublicKey): string {
-  let whitelistedMint = Object.keys(networks.mainnet.mints)
-    .filter(label => networks.mainnet.mints[label].equals(mint))
-    .pop();
-  if (whitelistedMint) {
-    return whitelistedMint.toUpperCase();
-  }
   return mint.toString();
 }
